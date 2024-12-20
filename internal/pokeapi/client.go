@@ -1,4 +1,4 @@
-package main
+package pokeapi
 
 import (
 	"encoding/json"
@@ -8,10 +8,10 @@ import (
 )
 
 type apiResponse interface {
-	locationAreaList
+	LocationAreaList
 }
 
-type locationAreaList struct {
+type LocationAreaList struct {
 	Count    int64    `json:"count"`
 	Next     string   `json:"next"`
 	Previous *string  `json:"previous"`
@@ -23,7 +23,7 @@ type Result struct {
 	URL  string `json:"url"`
 }
 
-func getFromAPI[T apiResponse](url string) (T, error) {
+func GetFromAPI[T apiResponse](url string) (T, error) {
 	var result T
 
 	res, err := http.Get(url)

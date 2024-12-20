@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/zorahscope/pokedexcli/internal/pokeapi"
 	"os"
 	"strings"
 )
@@ -97,7 +98,7 @@ func commandMap(config *commandConfig) error {
 	if config.next == "" {
 		config.next = "https://pokeapi.co/api/v2/location-area/"
 	}
-	list, err := getFromAPI[locationAreaList](config.next)
+	list, err := pokeapi.GetFromAPI[pokeapi.LocationAreaList](config.next)
 	if err != nil {
 		return fmt.Errorf("error getting data from API: %w", err)
 	}
@@ -123,7 +124,7 @@ func commandMapb(config *commandConfig) error {
 		fmt.Println("you're on the first page")
 		return nil
 	}
-	list, err := getFromAPI[locationAreaList](config.previous)
+	list, err := pokeapi.GetFromAPI[pokeapi.LocationAreaList](config.previous)
 	if err != nil {
 		return fmt.Errorf("error getting data from API: %w", err)
 	}
