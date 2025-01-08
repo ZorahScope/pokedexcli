@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/zorahscope/pokedexcli/internal/pokeapi"
+	"math/rand"
 	"os"
 	"strings"
 )
@@ -19,6 +20,7 @@ type commandConfig struct {
 	previous   string
 	pageNum    int
 	exploreURL string
+	pokedex    map[string]pokeapi.Pokemon
 }
 
 var supportedCommands map[string]cliCommand
@@ -52,6 +54,11 @@ func init() {
 			name:        "explore",
 			description: "Displays list of pokemon at given location",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "Attempts to catch designated pokemon",
+			callback:    commandCatch,
 		},
 	}
 }
@@ -168,5 +175,36 @@ func commandExplore(config *commandConfig, args string) error {
 	for _, pokemon := range list.PokemonEncounters {
 		fmt.Printf(" - %s\n", pokemon.Pokemon.Name)
 	}
+	return nil
+}
+
+func commandCatch(config *commandConfig, args string) error {
+	pokemonURL := "https://pokeapi.co/api/v2/pokemon/"
+
+	if pokemonURL+args == pokemonURL {
+		fmt.Println("No pokemon selected! Please try again")
+		return nil
+	}
+
+	pkmn, err := pokeapi.GetFromAPI[pokeapi.Pokemon](pokemonURL + args)
+	if err != nil {
+		fmt.Printf("error getting data from API: %v\n", err)
+		return fmt.Errorf("error getting data from API: %w", err)
+	}
+	fmt.Printf("Throwing a Pokeball at %v...\n", pkmn.Name)
+
+	if config.pokedex == nil {
+		config.pokedex = make(map[string]pokeapi.Pokemon)
+	}
+
+	captureChance := 20.0 / float64(pkmn.BaseExperience)
+	randomValue := rand.Float64()
+
+	if randomValue < captureChance {
+		config.pokedex[pkmn.Name] = pkmn
+		fmt.Printf("%v was caught!\n", pkmn.Name)
+		return nil
+	}
+	fmt.Printf("%v escaped!\n", pkmn.Name)
 	return nil
 }
