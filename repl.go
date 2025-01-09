@@ -65,6 +65,11 @@ func init() {
 			description: "Displays information of captured pokemon",
 			callback:    commandInspect,
 		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "Displays list of pokemon that have been captured",
+			callback:    commandPokedex,
+		},
 	}
 }
 
@@ -237,5 +242,16 @@ func commandInspect(config *commandConfig, args string) error {
 
 	fmt.Println(output.String())
 
+	return nil
+}
+
+func commandPokedex(config *commandConfig, args string) error {
+	fmt.Println("Your Pokedex:")
+	if len(config.pokedex) == 0 {
+		fmt.Println("  - <empty>")
+	}
+	for k, _ := range config.pokedex {
+		fmt.Printf("  - %v\n", k)
+	}
 	return nil
 }
