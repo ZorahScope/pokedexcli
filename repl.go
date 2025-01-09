@@ -60,6 +60,11 @@ func init() {
 			description: "Attempts to catch designated pokemon",
 			callback:    commandCatch,
 		},
+		"inspect": {
+			name:        "inspect",
+			description: "Displays information of captured pokemon",
+			callback:    commandInspect,
+		},
 	}
 }
 
@@ -206,5 +211,31 @@ func commandCatch(config *commandConfig, args string) error {
 		return nil
 	}
 	fmt.Printf("%v escaped!\n", pkmn.Name)
+	return nil
+}
+
+func commandInspect(config *commandConfig, args string) error {
+	pkmn, ok := config.pokedex[args]
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+	var output strings.Builder
+
+	output.WriteString(fmt.Sprintf("Name: %v\n", pkmn.Name))
+	output.WriteString(fmt.Sprintf("Height: %d\n", pkmn.Height))
+	output.WriteString(fmt.Sprintf("Weight: %d\n", pkmn.Weight))
+	output.WriteString(fmt.Sprintf("Stats: \n"))
+
+	for _, stat := range pkmn.Stats {
+		output.WriteString(fmt.Sprintf("  -%v: %v\n", stat.Stat.Name, stat.BaseStat))
+	}
+	output.WriteString("Types:\n")
+	for _, typ := range pkmn.Types {
+		output.WriteString(fmt.Sprintf("  - %v\n", typ.Type.Name))
+	}
+
+	fmt.Println(output.String())
+
 	return nil
 }
